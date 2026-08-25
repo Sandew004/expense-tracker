@@ -1,5 +1,6 @@
 package com.sandew.expense_tracker;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,13 +13,32 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private AppUser user;
+
     private LocalDate date;
 
     private String description;
 
     private String category;
 
+    // Amount entered by the user
+    @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
+
+    // Currency entered by the user
+    @Column(nullable = false, length = 3)
+    private String currency;
+
+    // Exchange rate from the entered currency to LKR
+    @Column(name = "exchange_rate_to_lkr", nullable = false, precision = 19, scale = 4)
+    private BigDecimal exchangeRateToLkr;
+
+    // Converted amount in LKR
+    @Column(name = "amount_lkr", nullable = false, precision = 19, scale = 4)
+    private BigDecimal amountLkr;
 
     public Expense() {
     }
@@ -29,6 +49,14 @@ public class Expense {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
     }
 
     public LocalDate getDate() {
@@ -61,5 +89,29 @@ public class Expense {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public BigDecimal getExchangeRateToLkr() {
+        return exchangeRateToLkr;
+    }
+
+    public void setExchangeRateToLkr(BigDecimal exchangeRateToLkr) {
+        this.exchangeRateToLkr = exchangeRateToLkr;
+    }
+
+    public BigDecimal getAmountLkr() {
+        return amountLkr;
+    }
+
+    public void setAmountLkr(BigDecimal amountLkr) {
+        this.amountLkr = amountLkr;
     }
 }

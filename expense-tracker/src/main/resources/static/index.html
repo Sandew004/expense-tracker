@@ -4,83 +4,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Expense Tracker</title>
+    <title>Expense Tracker | Neon Ledger</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="container">
+    <section class="auth-shell" id="authShell" aria-labelledby="authHeading">
+        <div class="auth-copy">
+            <p class="eyebrow">PERSONAL FINANCE / PRIVATE LEDGER</p>
+            <h1>Make your money<br><span>make sense.</span></h1>
+            <p>One calm place for every expense, converted to LKR and visible only to you.</p>
+        </div>
+        <div class="auth-panel">
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab is-active" id="loginTab" role="tab" aria-selected="true">Log in</button>
+                <button type="button" class="auth-tab" id="registerTab" role="tab" aria-selected="false">Create account</button>
+            </div>
+            <h2 id="authHeading">Welcome back</h2>
+            <p class="auth-subtitle" id="authSubtitle">Enter your details to open your ledger.</p>
+            <form id="authForm">
+                <label for="authUsername">Username</label>
+                <input id="authUsername" type="text" minlength="3" maxlength="80" pattern="[a-zA-Z0-9._-]{3,80}" autocomplete="username" placeholder="e.g. sandew" required>
+                <label for="authPassword">Password</label>
+                <input id="authPassword" type="password" minlength="8" maxlength="72" autocomplete="current-password" placeholder="8 characters minimum" required>
+                <p class="auth-error" id="authError" role="alert"></p>
+                <button class="btn-submit" type="submit" id="authSubmit">Log in <span aria-hidden="true">-&gt;</span></button>
+            </form>
+        </div>
+    </section>
 
-        <h1>Expense Tracker</h1>
+    <main class="container app-shell" id="appShell" hidden>
+        <header class="app-header">
+            <div>
+                <p class="eyebrow">PERSONAL FINANCE / LKR LEDGER</p>
+                <h1>Expense Tracker <span class="status-dot" aria-hidden="true"></span></h1>
+                <p>Keep every rupee visible, wherever the transaction started.</p>
+            </div>
+            <div class="account-control"><span id="accountName"></span><button type="button" id="logoutButton">Log out</button></div>
+        </header>
 
-        <form id="expenseForm">
+        <section class="dashboard-grid" aria-label="Expense overview">
+            <article class="stat-card stat-card-primary">
+                <span class="stat-label">Total expenses</span>
+                <strong id="totalExpenses">LKR 0.00</strong>
+                <span class="stat-meta">All recorded time</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Transactions</span>
+                <strong id="expenseCount">0</strong>
+                <span class="stat-meta">Entries in your ledger</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">This month</span>
+                <strong id="monthlyExpenses">LKR 0.00</strong>
+                <span class="stat-meta">Current calendar month</span>
+            </article>
+            <article class="stat-card stat-card-accent">
+                <span class="stat-label">Largest expense</span>
+                <strong id="largestExpense">LKR 0.00</strong>
+                <span class="stat-meta">Highest LKR value</span>
+            </article>
+        </section>
 
-            <div class="form-group">
-                <label for="date">Date</label>
-                <input type="date" id="date" required>
+        <section class="entry-panel" aria-labelledby="entry-heading">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">QUICK ENTRY</p>
+                    <h2 id="entry-heading">Add an expense</h2>
+                </div>
+                <span class="keyboard-hint">LIVE CONVERSION</span>
             </div>
 
-            <div class="form-group">
-                <label for="description">Description</label>
-                <input
-                    type="text"
-                    id="description"
-                    placeholder="e.g. Lunch"
-                    required
-                >
+            <form id="expenseForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <div class="calendar-field">
+                            <input type="date" id="date" required aria-hidden="true" tabindex="-1">
+                            <button type="button" class="date-picker-trigger" id="datePickerTrigger" aria-haspopup="dialog" aria-expanded="false">
+                                <span id="datePickerLabel">Select a date</span><span aria-hidden="true">+</span>
+                            </button>
+                            <div class="calendar-popover" id="calendarPopover" role="dialog" aria-label="Choose expense date" hidden>
+                                <div class="calendar-header">
+                                    <button type="button" class="calendar-nav" id="previousMonth" aria-label="Previous month">&lt;</button>
+                                    <strong id="calendarMonth">Month YYYY</strong>
+                                    <button type="button" class="calendar-nav" id="nextMonth" aria-label="Next month">&gt;</button>
+                                </div>
+                                <div class="calendar-weekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+                                <div class="calendar-days" id="calendarDays"></div>
+                                <button type="button" class="calendar-today" id="calendarToday">Jump to today</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-wide">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" maxlength="100" placeholder="e.g. Morning coffee" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency" required>
+                            <option value="LKR">LKR - Sri Lankan Rupee</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - Pound Sterling</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="AUD">AUD - Australian Dollar</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                            <option value="SGD">SGD - Singapore Dollar</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="CNY">CNY - Chinese Yuan</option>
+                            <option value="AED">AED - UAE Dirham</option>
+                        </select>
+                        <span class="field-note" id="currencyHint">LKR is the reporting currency.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <span class="form-status" id="formStatus" role="status"></span>
+                    <div class="form-buttons">
+                        <button class="btn-cancel" id="cancelEdit" type="button" hidden>Cancel</button>
+                        <button class="btn-submit" type="submit"><span>+</span> <span id="submitLabel">Add expense</span></button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section class="scanner-panel" aria-labelledby="scanner-heading">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">SMART CAPTURE / ON DEVICE</p>
+                    <h2 id="scanner-heading">Scan a shopping bill</h2>
+                </div>
+                <span class="keyboard-hint">REVIEW BEFORE SAVE</span>
+            </div>
+            <p class="scanner-intro">Capture a clear bill and we will find possible line items. Nothing is added until you approve it.</p>
+            <div class="scanner-actions">
+                <button type="button" class="scan-button" id="openCamera"><span aria-hidden="true">◎</span> Use camera</button>
+                <label class="scan-button secondary" for="billUpload"><span aria-hidden="true">↥</span> Upload bill</label>
+                <input id="billUpload" type="file" accept="image/*" hidden>
+            </div>
+            <div class="camera-stage" id="cameraStage" hidden>
+                <video id="cameraPreview" autoplay playsinline></video>
+                <div class="camera-frame" aria-hidden="true"></div>
+                <div class="camera-controls"><button type="button" class="btn-cancel" id="closeCamera">Close</button><button type="button" class="btn-submit" id="captureBill">Capture bill</button></div>
+            </div>
+            <div class="scan-progress" id="scanProgress" role="status" hidden><span class="scan-spinner"></span><span id="scanStatus">Reading bill...</span></div>
+            <div class="scan-review" id="scanReview" hidden>
+                <div class="review-heading"><div><p class="eyebrow">CHECK EACH ITEM</p><h3>Possible expenses <span id="reviewCount">0</span></h3></div><button type="button" class="btn-clear" id="clearScan">Clear scan</button></div>
+                <div class="review-list" id="reviewList"></div>
+            </div>
+        </section>
+
+        <section class="table-section" aria-labelledby="expenses-heading">
+            <div class="section-heading table-heading">
+                <div>
+                    <p class="eyebrow">ACTIVITY STREAM</p>
+                    <h2 id="expenses-heading">Recent expenses <span id="visibleCount">0</span></h2>
+                </div>
+                <button class="btn-clear" id="clearFilters" type="button">Clear filters</button>
             </div>
 
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" required>
-                    <option value="">Select category</option>
-                    <option value="Food">Food</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Bills">Bills</option>
-                    <option value="Other">Other</option>
-                </select>
+            <div class="filters" aria-label="Filter expenses">
+                <label class="search-field" for="search"><span aria-hidden="true">/</span><input id="search" type="search" placeholder="Search expenses..." autocomplete="off"></label>
+                <select id="categoryFilter" aria-label="Filter by category"><option value="">All categories</option></select>
+                <select id="currencyFilter" aria-label="Filter by currency"><option value="">All currencies</option></select>
+                <input id="dateFrom" type="date" aria-label="Filter from date">
+                <input id="dateTo" type="date" aria-label="Filter to date">
             </div>
 
-            <div class="form-group">
-                <label for="amount">Amount</label>
-                <input
-                    type="number"
-                    id="amount"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    required
-                >
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Original amount</th>
+                            <th>Rate</th>
+                            <th>LKR amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseTableBody"></tbody>
+                </table>
+                <div class="empty-state" id="emptyState" hidden>
+                    <span class="empty-icon">//</span>
+                    <strong>No expenses found</strong>
+                    <p>Try a different filter or add your first entry above.</p>
+                </div>
+                <div class="loading-state" id="loadingState" hidden>Syncing your ledger<span class="loading-dots">...</span></div>
             </div>
+        </section>
 
-            <button type="submit">Add Expense</button>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
 
-        </form>
-
-        <hr>
-
-        <h2>Expenses</h2>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-
-            <tbody id="expenseTableBody">
-            </tbody>
-        </table>
-
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="script.js"></script>
 
 </body>
